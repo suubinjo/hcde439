@@ -30,10 +30,21 @@ body {
 
 h1 {
   font-weight: 800;
+  margin-bottom: 1.2em;
 }
 
 h2 {
   font-weight: 700;
+}
+
+h3 {
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+}
+
+h4 {
+  margin-top: 0.4em;
+  margin-bottom: 0.4em;
 }
 
 .header {
@@ -71,4 +82,16 @@ h2 {
 
 .assignment p {
   margin-top: 0.5em;
+}
+
+.schematic-img {
+  width: 300px;
+  height: auto;
+  object-fit: cover;
+}
+
+pre {
+  background: #f5f5f7;
+  padding: 1em;
+  border-radius: 8px;
 }

@@ -9,10 +9,74 @@
     <link href="style.css" rel="stylesheet" type="text/css" />
   </head>
   <body>
-    <h1>Example Student's Assignment 1!</h1>
-    <div class="header">
-      <img src="red-panda.jpg" />
-      <p>Here is all the documentation for assignment 1!</p>
-    </div>
+    <h1>Sue Jo's Assignment 1: Blink!</h1>
+    <section id="Overview">
+      <h3>OVERVIEW</h3>
+      <p>I work for a holiday light company, and the cheif innovation officer wants me to come up with a new pattern of blinking lights - 3 LEDs or more! </p>
+    </section>
+    <section id="Schematic">
+      <h3>SCHEMATIC</h3>
+      <img src="schematic.jpg" /, class="schematic-img">
+      <p>
+        I used a 220Ω for each red LED.
+      </p>
+    </section>
+    <section id="Circuit">
+      <h3>CIRCUIT</h3>
+          <div class="grid">
+            <figure>
+              <img src="circuit-gif.gif" />
+              <figcaption> Circuit operation (Image) </figcaption>
+            </figure>
+            <figure>
+              <img src="circuit-gif.gif" />
+              <figcaption> Circuit operation (GIF) </figcaption>
+            </figure>
+          </div>
+    </section>
+    <section id="Arduino">
+      <h3>ARDUINO</h3>
+      <pre><code>
+        // the setup function runs once when you press reset or power the board
+void setup() {
+  // initialize three LEDs as an output.
+  pinMode(11, OUTPUT); // first LED
+  pinMode(8, OUTPUT); // second LED
+  pinMode(5, OUTPUT); // third LED
+}
+
+// the loop function runs over and over again forever
+void loop() {
+  digitalWrite(11, HIGH);  // turn the first LED on (HIGH is the voltage level)
+  delay(1000);                      // wait for a second
+  digitalWrite(11, LOW);   // turn the first LED off by making the voltage LOW
+  delay(1000);
+  digitalWrite(8, HIGH);  // turn the second LED on (HIGH is the voltage level)
+  delay(1000);                      // wait for a second
+  digitalWrite(8, LOW);   // turn the second LED off by making the voltage LOW
+  delay(1000);
+  digitalWrite(5, HIGH);  // turn the third LED on (HIGH is the voltage level)
+  delay(1000);                      // wait for a second
+  digitalWrite(5, LOW);   // turn the third LED off by making the voltage LOW
+  delay(1000);                    // wait for a second
+}
+      </code></pre>
+    </section>
+    <section id="Questions">
+      <h3>ADDITIONAL QUESTIONS</h3>
+      <h4>
+        1: Draw a graph where the X axis is time and the Y axis is voltage across the LEDs. Draw a line for each of your 3 LEDs.
+      </h4>
+      <h4>
+        2: How many LEDs could you blink independently with your Arduino? How much current would that draw?
+      </h4>
+      <h4>
+        3: How fast do you need to blink your LEDs until you no longer can tell that they are blinking?
+      </h4>
+      <h4>
+        4: Did you use AI tools in completing this assignment? If yes, please provide details on how/when, as well as a brief reflection. If no, you can either leave this question blank, or provide other information if you'd like.
+      </h4>
+
+    </section>
   </body>
 </html>
