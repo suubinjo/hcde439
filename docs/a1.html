@@ -18,7 +18,7 @@
     </section>
     <section id="Schematic">
       <h3>SCHEMATIC</h3>
-      <img src="schematic.jpg" /, class="schematic-img">
+      <img src="a1-schematic.jpg" /, class="schematic-img">
       <p>
         For this assignment, I used three red LEDs (2V) and its own resistor so that each LED can be controlled independently. I used a 220Ω resistor for each LED. <br><br> Here's my calculation: <br> V_R = V_pin - V_LED = 5V - 2V = 3V <br> I = V_R / R = 3V / 0.02A = 150Ω <br><br> And then I rounded it up to 220Ω resistor which was provided in the kit.
       </p>
@@ -27,11 +27,11 @@
       <h3>CIRCUIT</h3>
           <div class="grid">
             <figure>
-              <img src="circuit.jpg" /, class="circuit-img">
+              <img src="a1-circuit.jpg" /, class="circuit-img">
               <figcaption> Circuit operation (Image) </figcaption>
             </figure>
             <figure>
-              <img src="circuit-gif.gif" /, class="circuit-img">
+              <img src="a1-circuit-gif.gif" /, class="circuit-img">
               <figcaption> Circuit operation (GIF) </figcaption>
             </figure>
           </div>
@@ -71,7 +71,7 @@ void loop() {
       <h4>
         1: Draw a graph where the X axis is time and the Y axis is voltage across the LEDs. Draw a line for each of your 3 LEDs.
       </h4>
-      <img src="graph.jpeg" />
+      <img src="a1-graph.jpeg" />
       <p>
         When the red LED is on, the voltage across it is 2V, and when it's off, the voltage is 0V. The LEDs blink one at a time. for 1 second each in sequence.
       </p>
@@ -79,13 +79,13 @@ void loop() {
         2: How many LEDs could you blink independently with your Arduino? How much current would that draw?
       </h4>
       <p>
-        In theory, an Arduino Uno can control about 12-18 LEDs (D2 - D13 & A0 - A5). The current will be different based on the color of LED and resistor value i use, but if the LEDs are blinking independently (= if there's only one LED on at the time), the actual current draw would be the current of that LED only. <br> So from my assignment, because there's only one LED on at any given time, the current draw would be I = (5V - 2V) / 220Ω = 13.6mA.
+        In theory, an Arduino Uno can control about 12-18 LEDs (D2 - D13 & A0 - A5). The current will be different based on the color of LED and resistor value I use, but if the LEDs are blinking independently (= if there's only one LED on at the time), the actual current draw would be the current of that LED only. <br> So from my assignment, because there's only one LED on at any given time, the current draw would be I = (5V - 2V) / 220Ω = 13.6mA.
       </p>
       <h4>
         3: How fast do you need to blink your LEDs until you no longer can tell that they are blinking?
       </h4>
       <p>
-
+        I tested how fast the LEDs needed to blink by gradually reducing the delay value from 1000ms to 100ms and to 10ms, and when I set the delay to around 5ms, I could no longer tell that they were blinking. So from my observation, I would say to blink them faster than about 5ms per cycle.
       </p>
       <h4>
         4: Did you use AI tools in completing this assignment? If yes, please provide details on how/when, as well as a brief reflection. If no, you can either leave this question blank, or provide other information if you'd like.
