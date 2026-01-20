@@ -12,30 +12,34 @@
     <h1>Sue Jo's Assignment 1: Blink!</h1>
     <section id="Overview">
       <h3>OVERVIEW</h3>
-      <p>I work for a holiday light company, and the cheif innovation officer wants me to come up with a new pattern of blinking lights - 3 LEDs or more! </p>
+      <p>
+        I work for a holiday light company, and the cheif innovation officer asked me to design a new blinking pattern using at least three LEDs.
+      </p>
     </section>
     <section id="Schematic">
       <h3>SCHEMATIC</h3>
       <img src="schematic.jpg" /, class="schematic-img">
       <p>
-        I used a 220Ω for each red LED.
+        For this assignment, I used three red LEDs (2V) and its own resistor so that each LED can be controlled independently. I used a 220Ω resistor for each LED. <br><br> Here's my calculation: <br> V_R = V_pin - V_LED = 5V - 2V = 3V <br> I = V_R / R = 3V / 0.02A = 150Ω <br><br> And then I rounded it up to 220Ω resistor which was provided in the kit.
       </p>
     </section>
     <section id="Circuit">
       <h3>CIRCUIT</h3>
           <div class="grid">
             <figure>
-              <img src="circuit-gif.gif" />
+              <img src="circuit.jpg" /, class="circuit-img">
               <figcaption> Circuit operation (Image) </figcaption>
             </figure>
             <figure>
-              <img src="circuit-gif.gif" />
+              <img src="circuit-gif.gif" /, class="circuit-img">
               <figcaption> Circuit operation (GIF) </figcaption>
             </figure>
           </div>
     </section>
     <section id="Arduino">
       <h3>ARDUINO</h3>
+      <p>Below is my Arduino code snippet. I used the built in example "Blink" provided by Arduino and edited it to control three LEDs independently. (Source: <a href="https://docs.arduino.cc/built-in-examples/basics/Blink/">https://docs.arduino.cc/built-in-examples/basics/Blink/)</a>
+      </p>
       <pre><code>
         // the setup function runs once when you press reset or power the board
 void setup() {
@@ -67,15 +71,28 @@ void loop() {
       <h4>
         1: Draw a graph where the X axis is time and the Y axis is voltage across the LEDs. Draw a line for each of your 3 LEDs.
       </h4>
+      <img src="graph.jpeg" />
+      <p>
+        When the red LED is on, the voltage across it is 2V, and when it's off, the voltage is 0V. The LEDs blink one at a time. for 1 second each in sequence.
+      </p>
       <h4>
         2: How many LEDs could you blink independently with your Arduino? How much current would that draw?
       </h4>
+      <p>
+        In theory, an Arduino Uno can control about 12-18 LEDs (D2 - D13 & A0 - A5). The current will be different based on the color of LED and resistor value i use, but if the LEDs are blinking independently (= if there's only one LED on at the time), the actual current draw would be the current of that LED only. <br> So from my assignment, because there's only one LED on at any given time, the current draw would be I = (5V - 2V) / 220Ω = 13.6mA.
+      </p>
       <h4>
         3: How fast do you need to blink your LEDs until you no longer can tell that they are blinking?
       </h4>
+      <p>
+
+      </p>
       <h4>
         4: Did you use AI tools in completing this assignment? If yes, please provide details on how/when, as well as a brief reflection. If no, you can either leave this question blank, or provide other information if you'd like.
       </h4>
+      <p>
+        Yes. I used ChatGPT to ask about HTML/CSS structures for specific styles that I wanted, since it has been a while since I took HCDE 310 and I had forgotten most of the syntax.
+      </p>
 
     </section>
   </body>
