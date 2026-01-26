@@ -4,15 +4,131 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, maximum-scale=1.0" />
 
-    <title>Example Student's HCDE 439 Physical Computing Page!</title>
+    <title>Sue Jo's HCDE 439 Physical Computing Page!</title>
 
     <link href="style.css" rel="stylesheet" type="text/css" />
   </head>
   <body>
-    <h1>Example Student's Assignment 2!</h1>
-    <div class="header">
-      <img src="red-panda.jpg" />
-      <p>Here is all the documentation for assignment 2!</p>
-    </div>
+    <h1>Sue Jo's Assignment 2: Fade!</h1>
+    <section id="Overview">
+      <h3>OVERVIEW</h3>
+      <p>
+        I work for a toy company, and the chief innovation officer wanted me to design a light up toy using at least three LEDs and a button (or a switch I make myself).
+      </p>
+    </section>
+    <section id="Schematic">
+      <h3>SCHEMATIC</h3>
+      <img src="a1-schematic.jpg" /, class="schematic-img">
+      <p>
+        For this assignment, I used three red LEDs (2V) and its own resistor so that each LED can be controlled independently. I used a 220Ω resistor for each LED. <br><br> Here's my calculation: <br> V_R = V_pin - V_LED = 5V - 2V = 3V <br> I = V_R / R = 3V / 0.02A = 150Ω <br><br> And then I rounded it up to 220Ω resistor which was provided in the kit.
+      </p>
+    </section>
+    <section id="Circuit">
+      <h3>CIRCUIT</h3>
+      <p>
+        I used a button to toggle three LEDs so that all three turn on at once, and then two of them fade off.
+      </p>
+          <div class="grid">
+            <figure>
+              <img src="a2-circuit.jpeg" /, class="circuit-img">
+              <figcaption> Circuit operation (Image) </figcaption>
+            </figure>
+            <figure>
+              <img src="a2-circuit-gif.gif" /, class="circuit-img">
+              <figcaption> Circuit operation (GIF) </figcaption>
+            </figure>
+          </div>
+    </section>
+    <section id="Arduino">
+      <h3>ARDUINO</h3>
+      <p>The requirements for the code were to use analogWrite(), digitalWrite(), digitalRead(), and a for loop, including a fading effect on one LED.
+      </p>
+      <pre><code>
+// declare the pin numbers for three LEDs and Button
+int firstLed = 3;
+int secondLed = 5;
+int thirdLed = 6;
+int buttonPin = 2;
+
+// button tracking + fade settings
+int buttonState = 0;
+int lastButtonState = buttonState;
+int brightness = 255;
+int fadeAmount = 5;
+int clicks = 0;
+
+void setup() {
+  // set the LED pins as an output:
+  pinMode(firstLed, OUTPUT);
+  pinMode(secondLed, OUTPUT);
+  pinMode(thirdLed, OUTPUT);
+  // initialize the pushbutton pin as an input:
+  pinMode(buttonPin, INPUT);
+}
+
+void loop() {
+  // read the current state of the button:
+  buttonState = digitalRead(buttonPin);
+
+  // detect a new press (LOW -> HIGH):
+  if (buttonState == HIGH && lastButtonState == LOW) {
+    clicks ++;
+    // if the number of click is odd, turn on all three LEDs
+    if (clicks % 2 != 0) {
+      analogWrite(firstLed, brightness);
+      analogWrite(secondLed, brightness);
+      analogWrite(thirdLed, brightness);
+    }
+    // even click, fade 2nd/3rd LED out, keep 1st off
+    else {
+      // loop to gradually reduce brightness to zero
+      while (brightness > 0) {
+        // decrease the brightness by fadeAmount
+        brightness = brightness - fadeAmount;
+        // Turn off the first LED completely
+        digitalWrite(firstLed, LOW);
+        // Set the second and third LED to the current brightness
+        analogWrite(secondLed, brightness);
+        analogWrite(thirdLed, brightness);
+        delay(30);  // pause to control fade speed
+      }
+      // reset the brightness back to max
+      brightness = 255;
+    }
+  }
+  // save the current button state for next loop
+  lastButtonState = buttonState;
+}
+      </code></pre>
+    </section>
+    <section id="Questions">
+      <h3>ADDITIONAL QUESTIONS</h3>
+      <h4>
+        1: Draw a chart where the X axis is time and the Y axis is voltage. Draw 3 lines representing the voltage across an LED with analogWrite(led, 64), analogWrite(led, 128), and analogWrite(led, 255).
+      </h4>
+      <img src="a1-graph.jpeg" />
+      <p>
+
+      </p>
+      <h4>
+        2: If all your LEDs were on simultaneously, what would the total current draw be? Is this above or below the total Arduino current draw limits? If all your LEDs were on, how long would your circuit run if powered by a 1200 mAh battery?
+      </h4>
+      <p>
+        Since one red LED's current is around 13.6mA, total current for 3 LEDs on at once would be 3*13.6 = 40.9mA.
+      </p>
+      <h4>
+        3: Measure and record the actual voltage across one of your LEDs when it's on. How does this compare to the theoretical forward voltage for your LED color?
+      </h4>
+      <p>
+        When I measured the actual voltage across my red LED, it was around 1.9V. This is slightly lower than the theoretical forward voltage of a red LED (2.0V), which make sense because I used a 220Ω  resistor instead of the calculated 150Ω.
+      </p>
+      <h4>
+        4: Did you use AI tools in completing this assignment? If yes, please provide details on how/when, as well as a brief reflection. If no, you can either leave this question blank, or provide other information if you'd like.
+      </h4>
+      <p>
+        Yes. I used ChatGPT to check grammar and refine sentence structure.
+      </p>
+
+    </section>
   </body>
 </html>
