@@ -18,9 +18,13 @@
     </section>
     <section id="Schematic">
       <h3>SCHEMATIC</h3>
-      <img src="a1-schematic.jpg" /, class="schematic-img">
+      <img src="a2-schematic.jpeg" /, class="a2-schematic-img">
       <p>
-        For this assignment, I used three red LEDs (2V) and its own resistor so that each LED can be controlled independently. I used a 220Ω resistor for each LED. <br><br> Here's my calculation: <br> V_R = V_pin - V_LED = 5V - 2V = 3V <br> I = V_R / R = 3V / 0.02A = 150Ω <br><br> And then I rounded it up to 220Ω resistor which was provided in the kit.
+        For this assignment, I used three red LEDs (2V) and its own resistor so that each LED can be controlled independently. I used a 220Ω resistor for each LED.
+        <br><br> Here's my calculation:
+        <br> V_R = V_pin - V_LED = 5V - 2V = 3V
+        <br> I = V_R / R = 3V / 0.02A = 150Ω
+        <br><br> And then I rounded it up to 220Ω resistor which was provided in the kit. For button, I used a 10kΩ resistor to limit thr current because the value allows only a very small current to flow while still providing a stable signal to the Arduino input pin.
       </p>
     </section>
     <section id="Circuit">
@@ -106,15 +110,15 @@ void loop() {
       <h4>
         1: Draw a chart where the X axis is time and the Y axis is voltage. Draw 3 lines representing the voltage across an LED with analogWrite(led, 64), analogWrite(led, 128), and analogWrite(led, 255).
       </h4>
-      <img src="a1-graph.jpeg" />
+      <img src="a2-graph.jpeg" />
       <p>
-
+        The chart shows PWM signals for three analogWrite values. For analogWrite(64), the voltage stays at 5V for a short period and OV for most of the time, for analogWrite(128), its evenly between 5V and 0V. For analogWrite(255), which is a full brightness, the voltage remains at 5V constantly.
       </p>
       <h4>
         2: If all your LEDs were on simultaneously, what would the total current draw be? Is this above or below the total Arduino current draw limits? If all your LEDs were on, how long would your circuit run if powered by a 1200 mAh battery?
       </h4>
       <p>
-        Since one red LED's current is around 13.6mA, total current for 3 LEDs on at once would be 3*13.6 = 40.9mA.
+        Let's calculate a current per LED first. If I say all my LEDs are red with a 220Ω resister and a 5V Arduino, I = (5V-2V) / 220Ω = 3/220 = 13.6mA. Therefore, total current when all 3 red LEDs are on at once would be 3*13.6 = 40.9mA, which is still below the overall I/O current limits. <br> So if powered by a 1200mAh battery, my circuit will run around 1200mAh / 40.9mA = 29.3 hours.
       </p>
       <h4>
         3: Measure and record the actual voltage across one of your LEDs when it's on. How does this compare to the theoretical forward voltage for your LED color?

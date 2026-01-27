@@ -90,6 +90,12 @@ h4 {
   object-fit: cover;
 }
 
+.a2-schematic-img {
+  width: 500px;
+  height: auto;
+  object-fit: cover;
+}
+
 .circuit-img {
   width: 400px;
   height: 400px;
