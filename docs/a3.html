@@ -13,24 +13,26 @@
     <section id="Overview">
       <h3>OVERVIEW</h3>
       <p>
-        I work for a toy company, and the chief innovation officer wanted me to design a light up toy using at least three LEDs and a button (or a switch I make myself).
+        I work at a smart home company, and the CIO wants me to prototype a new visualization using a variable resistance sensor in a voltage divider.
       </p>
     </section>
     <section id="Schematic">
       <h3>SCHEMATIC</h3>
-      <img src="a2-schematic.jpeg" /, class="a2-schematic-img">
+      <img src="a3-schematic.JPEG" /, class="a2-schematic-img">
       <p>
-        For this assignment, I used three red LEDs (2V) and its own resistor so that each LED can be controlled independently. I used a 220Ω resistor for each LED.
+        For this assignment, I used one red LED and one green LED (both 2V) and its own resistor so that each LED can be controlled independently. I used a 220Ω resistor for each LED.
         <br><br> Here's my calculation:
         <br> V_R = V_pin - V_LED = 5V - 2V = 3V
         <br> I = V_R / R = 3V / 0.02A = 150Ω
-        <br><br> And then I rounded it up to 220Ω resistor which was provided in the kit. For button, I used a 10kΩ resistor to limit thr current because the value allows only a very small current to flow while still providing a stable signal to the Arduino input pin.
+        <br><br> And then I rounded it up to 220Ω resistor which was provided in the kit.
+        <br> For the photoresistor, I used 10kΩ resistor, calculated as below:
+        <br><br> R2 = √(R_low*R_high) <br> R2 = √(5k*162k) = 28.4kΩ <br><br> So I used the 10kΩ resistor, which was the closest available value in the kit to the calculated resistance(because the next available option was 100kΩ).
       </p>
     </section>
     <section id="Circuit">
       <h3>CIRCUIT</h3>
       <p>
-        I used a button to toggle three LEDs so that all three turn on at once, and then two of them fade off.
+        I made a prototype that senses the ambient brightness using a photoresistor that changes the LED indicators based on the light level.
       </p>
           <div class="grid">
             <figure>
@@ -45,94 +47,75 @@
     </section>
     <section id="Arduino">
       <h3>ARDUINO</h3>
-      <p>The requirements for the code were to use analogWrite(), digitalWrite(), digitalRead(), and a for loop, including a fading effect on one LED.
+      <p>The requirements for the code were to use analogWrite(), analogRead(), map(), and if statement. I started coding with the built in example "AnalogInOutSerial" provided by Arduino and edited it to control two LEDs with an if statement. (Source: <a href="https://docs.arduino.cc/built-in-examples/analog/AnalogInOutSerial/">https://docs.arduino.cc/built-in-examples/analog/AnalogInOutSerial/)</a>
       </p>
       <pre><code>
-// declare the pin numbers for three LEDs and Button
-int firstLed = 3;
-int secondLed = 5;
-int thirdLed = 6;
-int buttonPin = 2;
+// These constants won't change. They're used to give names to the pins used:
+const int analogInPin = A0;  // Analog input pin that the potentiometer is attached to
+const int analogOutRedPin = 6;  // Sets pin 6 as the PWM output pin for the red LED
+const int analogOutGreenPin = 9; // Sets pin 9 as the PWM output pin for the green LED
 
-// button tracking + fade settings
-int buttonState = 0;
-int lastButtonState = buttonState;
-int brightness = 255;
-int fadeAmount = 5;
-int clicks = 0;
+int sensorValue = 0;  // value read from the pot
+int outputValue = 0;  // value output to the PWM (analog out)
+int sensorConstrainValue = 0; // stores the constrained sensor value
 
 void setup() {
-  // set the LED pins as an output:
-  pinMode(firstLed, OUTPUT);
-  pinMode(secondLed, OUTPUT);
-  pinMode(thirdLed, OUTPUT);
-  // initialize the pushbutton pin as an input:
-  pinMode(buttonPin, INPUT);
+  // initialize serial communications at 9600 bps:
+  Serial.begin(9600);
 }
 
 void loop() {
-  // read the current state of the button:
-  buttonState = digitalRead(buttonPin);
-
-  // detect a new press (LOW -> HIGH):
-  if (buttonState == HIGH && lastButtonState == LOW) {
-    clicks ++;
-    // if the number of click is odd, turn on all three LEDs
-    if (clicks % 2 != 0) {
-      analogWrite(firstLed, brightness);
-      analogWrite(secondLed, brightness);
-      analogWrite(thirdLed, brightness);
-    }
-    // even click, fade 2nd/3rd LED out, keep 1st off
-    else {
-      // loop to gradually reduce brightness to zero
-      while (brightness > 0) {
-        // decrease the brightness by fadeAmount
-        brightness = brightness - fadeAmount;
-        // Turn off the first LED completely
-        digitalWrite(firstLed, LOW);
-        // Set the second and third LED to the current brightness
-        analogWrite(secondLed, brightness);
-        analogWrite(thirdLed, brightness);
-        delay(30);  // pause to control fade speed
-      }
-      // reset the brightness back to max
-      brightness = 255;
-    }
+  // read the analog in value:
+  sensorValue = analogRead(analogInPin);
+  // limits the sensor value to the range 100-990
+  sensorConstrainValue = constrain(sensorValue, 100, 990);
+  // map it to the range of the analog out:
+  outputValue = map(sensorConstrainValue, 100, 990, 0, 255);
+  // turns on the red LED & turns off the green LED when the mapped
+  // sensor value is in lower half of the range
+  if(outputValue <= 128){
+    analogWrite(analogOutRedPin, outputValue);
+    analogWrite(analogOutGreenPin, 0);
+  } // turns on the green LED & turns off the red LED when the mapped
+  // sensor value is in upper half of the range
+  else {
+    analogWrite(analogOutRedPin, 0);
+    analogWrite(analogOutGreenPin, outputValue);
   }
-  // save the current button state for next loop
-  lastButtonState = buttonState;
+  // print the results to the Serial Monitor:
+  Serial.print("sensor = ");
+  Serial.print(sensorValue);
+  Serial.print("\t output = ");
+  Serial.println(outputValue);
+
+  // wait 2 milliseconds before the next loop for the analog-to-digital
+  // converter to settle after the last reading:
+  delay(2);
 }
       </code></pre>
     </section>
     <section id="Questions">
       <h3>ADDITIONAL QUESTIONS</h3>
       <h4>
-        1: Draw a chart where the X axis is time and the Y axis is voltage. Draw 3 lines representing the voltage across an LED with analogWrite(led, 64), analogWrite(led, 128), and analogWrite(led, 255).
+        1: In your voltage divider, can the variable resistor be either R1 or R2 or does it need to be one or the other? Justify your answer with example calculations.
       </h4>
-      <img src="a2-graph.jpeg" />
+      <img src="a3-q1.jpeg" />
       <p>
-        The chart shows PWM signals for three analogWrite values. For analogWrite(64), the voltage stays at 5V for a short period and OV for most of the time, for analogWrite(128), its evenly between 5V and 0V. For analogWrite(255), which is a full brightness, the voltage remains at 5V constantly.
+        As explained in the example calculation, the variable resistor can be placed as either R1 or R2, because both form a valid voltage divider and produce a voltage in a range of 0V~5V. The only difference is that the direction of change of the analogRead value will be reversed.
       </p>
       <h4>
-        2: If all your LEDs were on simultaneously, what would the total current draw be? Is this above or below the total Arduino current draw limits? If all your LEDs were on, how long would your circuit run if powered by a 1200 mAh battery?
+        2: Draw a graph where the x-axis is time and the y-axis is voltage. Plot the voltage at V-measure (where your pin is reading the voltage) of your voltage divider of your shared gif/video.
       </h4>
+      <img src="a3-q2.jpg" />
       <p>
-        Let's calculate a current per LED first. If I say all my LEDs are red with a 220Ω resister and a 5V Arduino, I = (5V-2V) / 220Ω = 3/220 = 13.6mA. Therefore, total current when all 3 red LEDs are on at once would be 3*13.6 = 40.9mA, which is still below the overall I/O current limits. <br> So if powered by a 1200mAh battery, my circuit will run around 1200mAh / 40.9mA = 29.3 hours.
+        The voltage at V-measure (A0) changes over time as I cover and uncover the photoresistor. In my code, I constrained the value from 100 to 990, so the V-measure will be in a range of 0.49~4.84V.
       </p>
       <h4>
-        3: Measure and record the actual voltage across one of your LEDs when it's on. How does this compare to the theoretical forward voltage for your LED color?
+        3: AnalogWrite and analogRead are respectively 8-bit and 10-bit values. Imagine you had 10-bit PWM and a 16-bit analog-to-digital converter instead. How would this change your map() code? Explain your answer.
       </h4>
       <p>
-        When I measured the actual voltage across my red LED, it was around 1.9V. This is slightly lower than the theoretical forward voltage of a red LED (2.0V), which make sense because I used a 220Ω  resistor instead of the calculated 150Ω.
+        Originally with the 8-bit and 10-bit values, map() code is map(sensorValue, 0, 1023, 0, 255). So with those new values, the map code will be map(sensorValue, 0, 65523, 0, 1023).
       </p>
-      <h4>
-        4: Did you use AI tools in completing this assignment? If yes, please provide details on how/when, as well as a brief reflection. If no, you can either leave this question blank, or provide other information if you'd like.
-      </h4>
-      <p>
-        Yes. I used ChatGPT to check grammar and refine sentence structure.
-      </p>
-
     </section>
   </body>
 </html>
