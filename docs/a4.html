@@ -20,19 +20,13 @@
       <h3>SCHEMATIC</h3>
       <img src="a4-schematic.jpeg" /, class="a2-schematic-img">
       <p>
-        For this assignment, I used one red LED and one green LED (both 2V) and its own resistor so that each LED can be controlled independently. I used a 220Ω resistor for each LED.
-        <br><br> Here's my calculation:
-        <br> V_R = V_pin - V_LED = 5V - 2V = 3V
-        <br> I = V_R / R = 3V / 0.02A = 150Ω
-        <br><br> And then I rounded it up to 220Ω resistor which was provided in the kit.
-        <br> For the photoresistor, I used 10kΩ resistor, calculated as below:
-        <br><br> R2 = √(R_low*R_high) <br> R2 = √(5k*162k) = 28.4kΩ <br><br> So I used the 10kΩ resistor, which was the closest available value in the kit to the calculated resistance(because the next available option was 100kΩ).
+        For this assignment, I used a capacitive touch sensor as the input and a servo motor as the output. All grounds in the circuit are shared. A piece of aluminum foil is connected to the receive pin, which acts as the touch pad, and a 1MΩ resistor is placed between the send pin and receive pin. <br> Since the CapacitiveSensor library uses a high value resistor between the send pin and the receive pin to detact small changes in capacitance, I chose 1MΩ resistor which was the largest available resistor in my kit.
       </p>
     </section>
     <section id="Circuit">
       <h3>CIRCUIT</h3>
       <p>
-        I made a prototype that senses the ambient brightness using a photoresistor that changes the LED indicators based on the light level.
+        I made a prototype that senses a touch using a piece of aluminum foil and moves a servo motor in response to the detected touch.
       </p>
           <div class="grid">
             <figure>
@@ -47,50 +41,44 @@
     </section>
     <section id="Arduino">
       <h3>ARDUINO</h3>
-      <p>The requirements for the code were to use analogWrite(), analogRead(), map(), and if statement. I started coding with the built in example "AnalogInOutSerial" provided by Arduino and edited it to control two LEDs with an if statement. (Source: <a href="https://docs.arduino.cc/built-in-examples/analog/AnalogInOutSerial/">https://docs.arduino.cc/built-in-examples/analog/AnalogInOutSerial/)</a>
+      <p> From serial measurements, the sensor values were approximately 50-70 when not touched and 800-900 when touched. I chose a touch threshold as 300 from there to avoid false touches because it is safely above the max idle noise (70).
       </p>
       <pre><code>
-// These constants won't change. They're used to give names to the pins used:
-const int analogInPin = A0;  // Analog input pin that the potentiometer is attached to
-const int analogOutRedPin = 6;  // Sets pin 6 as the PWM output pin for the red LED
-const int analogOutGreenPin = 9; // Sets pin 9 as the PWM output pin for the green LED
+// include at least two libraries
+#include <CapacitiveSensor.h>
+#include <Servo.h>
 
-int sensorValue = 0;  // value read from the pot
-int outputValue = 0;  // value output to the PWM (analog out)
-int sensorConstrainValue = 0; // stores the constrained sensor value
+// 1M resistor between pins 4 & 2, pin 2 is sensor pin, add a foil
+CapacitiveSensor cs_4_2 = CapacitiveSensor(4,2);
+// create a servo object
+Servo myservo;
+
+// set the touch detection threshold value
+const long touchThreshold = 300
 
 void setup() {
-  // initialize serial communications at 9600 bps:
-  Serial.begin(9600);
+  // disable the automatic calibration of the capacitive sensor
+  cs_4_2.set_CS_AutocaL_Millis(0xFFFFFFFF);
+  Serial.begin(9600); // monitor sensor value
+  myservo.attach(9); // attach the servo motor to PMW pin
 }
 
 void loop() {
-  // read the analog in value:
-  sensorValue = analogRead(analogInPin);
-  // limits the sensor value to the range 100-990
-  sensorConstrainValue = constrain(sensorValue, 100, 990);
-  // map it to the range of the analog out:
-  outputValue = map(sensorConstrainValue, 100, 990, 0, 255);
-  // turns on the red LED & turns off the green LED when the mapped
-  // sensor value is in lower half of the range
-  if(outputValue <= 128){
-    analogWrite(analogOutRedPin, outputValue);
-    analogWrite(analogOutGreenPin, 0);
-  } // turns on the green LED & turns off the red LED when the mapped
-  // sensor value is in upper half of the range
-  else {
-    analogWrite(analogOutRedPin, 0);
-    analogWrite(analogOutGreenPin, outputValue);
-  }
-  // print the results to the Serial Monitor:
-  Serial.print("sensor = ");
-  Serial.print(sensorValue);
-  Serial.print("\t output = ");
-  Serial.println(outputValue);
+  // read the current capacitive touch sensor value
+  long sensorValue = cs_4_2.capacitiveSensor(30);
 
-  // wait 2 milliseconds before the next loop for the analog-to-digital
-  // converter to settle after the last reading:
-  delay(2);
+  // check whether the sensor value indicates a touch
+  if (sensorValue > touchThreshold) {
+    // move the servo to 180 degrees when a touch is detected
+    myservo.write(180);
+  } else {
+    // move the servo back to 0 degrees when not touched
+    myservo.write(0);
+  }
+  // print the current sensor value
+  Serial.println(sensorValue);
+  // add a short delay to reduce jitter and slow down updates
+  delay(20);
 }
       </code></pre>
     </section>
@@ -115,7 +103,6 @@ void loop() {
       <h4>
         2: Your input device is slightly broken, leading it to give us an erroneous reading 1% of the time. How can we address this? Answer in (pseudo)code.
       </h4>
-      <img src="a3-q2.jpg" />
       <p>
 
       </p>
