@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, maximum-scale=1.0" />
+
+    <title>Sue Jo's HCDE 439 Physical Computing Page!</title>
+
+    <link href="style.css" rel="stylesheet" type="text/css" />
+  </head>
+  <body>
+    <h1>Sue Jo's Assignment 4: Libraries!</h1>
+    <section id="Overview">
+      <h3>OVERVIEW</h3>
+      <p>
+        I work at a smart home company, and the CIO wants me to prototype a new visualization using a variable resistance sensor in a voltage divider.
+      </p>
+    </section>
+    <section id="Schematic">
+      <h3>SCHEMATIC</h3>
+      <img src="a3-schematic.JPEG" /, class="a2-schematic-img">
+      <p>
+        For this assignment, I used one red LED and one green LED (both 2V) and its own resistor so that each LED can be controlled independently. I used a 220Ω resistor for each LED.
+        <br><br> Here's my calculation:
+        <br> V_R = V_pin - V_LED = 5V - 2V = 3V
+        <br> I = V_R / R = 3V / 0.02A = 150Ω
+        <br><br> And then I rounded it up to 220Ω resistor which was provided in the kit.
+        <br> For the photoresistor, I used 10kΩ resistor, calculated as below:
+        <br><br> R2 = √(R_low*R_high) <br> R2 = √(5k*162k) = 28.4kΩ <br><br> So I used the 10kΩ resistor, which was the closest available value in the kit to the calculated resistance(because the next available option was 100kΩ).
+      </p>
+    </section>
+    <section id="Circuit">
+      <h3>CIRCUIT</h3>
+      <p>
+        I made a prototype that senses the ambient brightness using a photoresistor that changes the LED indicators based on the light level.
+      </p>
+          <div class="grid">
+            <figure>
+              <img src="a3-circuit.jpg" /, class="circuit-img">
+              <figcaption> Circuit operation (Image) </figcaption>
+            </figure>
+            <figure>
+              <img src="a3-circuit-gif.gif" /, class="circuit-img">
+              <figcaption> Circuit operation (GIF) </figcaption>
+            </figure>
+          </div>
+    </section>
+    <section id="Arduino">
+      <h3>ARDUINO</h3>
+      <p>The requirements for the code were to use analogWrite(), analogRead(), map(), and if statement. I started coding with the built in example "AnalogInOutSerial" provided by Arduino and edited it to control two LEDs with an if statement. (Source: <a href="https://docs.arduino.cc/built-in-examples/analog/AnalogInOutSerial/">https://docs.arduino.cc/built-in-examples/analog/AnalogInOutSerial/)</a>
+      </p>
+      <pre><code>
+// These constants won't change. They're used to give names to the pins used:
+const int analogInPin = A0;  // Analog input pin that the potentiometer is attached to
+const int analogOutRedPin = 6;  // Sets pin 6 as the PWM output pin for the red LED
+const int analogOutGreenPin = 9; // Sets pin 9 as the PWM output pin for the green LED
+
+int sensorValue = 0;  // value read from the pot
+int outputValue = 0;  // value output to the PWM (analog out)
+int sensorConstrainValue = 0; // stores the constrained sensor value
+
+void setup() {
+  // initialize serial communications at 9600 bps:
+  Serial.begin(9600);
+}
+
+void loop() {
+  // read the analog in value:
+  sensorValue = analogRead(analogInPin);
+  // limits the sensor value to the range 100-990
+  sensorConstrainValue = constrain(sensorValue, 100, 990);
+  // map it to the range of the analog out:
+  outputValue = map(sensorConstrainValue, 100, 990, 0, 255);
+  // turns on the red LED & turns off the green LED when the mapped
+  // sensor value is in lower half of the range
+  if(outputValue <= 128){
+    analogWrite(analogOutRedPin, outputValue);
+    analogWrite(analogOutGreenPin, 0);
+  } // turns on the green LED & turns off the red LED when the mapped
+  // sensor value is in upper half of the range
+  else {
+    analogWrite(analogOutRedPin, 0);
+    analogWrite(analogOutGreenPin, outputValue);
+  }
+  // print the results to the Serial Monitor:
+  Serial.print("sensor = ");
+  Serial.print(sensorValue);
+  Serial.print("\t output = ");
+  Serial.println(outputValue);
+
+  // wait 2 milliseconds before the next loop for the analog-to-digital
+  // converter to settle after the last reading:
+  delay(2);
+}
+      </code></pre>
+    </section>
+    <section id="Questions">
+      <h3>ADDITIONAL QUESTIONS</h3>
+      <h4>
+        1: Say you are using a servo motor you attach to pin 9. In your loop() you have the following code:
+        <pre><code>
+            void loop() {
+            for (pos = 0; pos <= 180; pos +=1) {
+                myservo.write(pos);
+                delay(100);
+                }
+            }
+        </code></pre>
+        Draw a graph with the x-axis as time and the y-axis as voltage at pin 9 with respect to ground.
+      </h4>
+      <img src="a3-q1.jpeg" />
+      <p>
+
+      </p>
+      <h4>
+        2: Your input device is slightly broken, leading it to give us an erroneous reading 1% of the time. How can we address this? Answer in (pseudo)code.
+      </h4>
+      <img src="a3-q2.jpg" />
+      <p>
+
+      </p>
+      <h4>
+        3: Your input device is slightly noisy, leading the measurement to randomly deviate from the true measurement up or down by 10%. How can we address this? Answer in (pseudo)code.
+      </h4>
+      <p>
+
+      </p>
+      <h4>
+        4: Did you use AI tools in completing this assignment? If yes, please provide details on how/when, as well as a brief reflection. If you used an LLM, please 'share' your conversation and include it as part of your submission, or cite the prompt(s) you used and the output. If no, you can either leave this question blank, or provide other information if you'd like.
+      </h4>
+      <p>
+
+      </p>
+    </section>
+  </body>
+</html>
