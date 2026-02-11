@@ -103,6 +103,12 @@ h4 {
   object-fit: cover;
 }
 
+.a4questions-img{
+  width: 400px;
+  height: auto;
+  object-fit: cover;
+}
+
 pre {
   background: #f5f5f7;
   padding: 1em;

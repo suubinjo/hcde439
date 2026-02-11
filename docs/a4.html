@@ -13,7 +13,7 @@
     <section id="Overview">
       <h3>OVERVIEW</h3>
       <p>
-        I work at a smart home company, and the CIO wants me to prototype a new visualization using a variable resistance sensor in a voltage divider.
+        This assignment asks you to build an Arduino project that uses at least one input and one output with more than one library or multiple sensors.
       </p>
     </section>
     <section id="Schematic">
@@ -44,9 +44,9 @@
       <p> From serial measurements, the sensor values were approximately 50-70 when not touched and 800-900 when touched. I chose a touch threshold as 300 from there to avoid false touches because it is safely above the max idle noise (70).
       </p>
       <pre><code>
-// include at least two libraries
-#include <CapacitiveSensor.h>
-#include <Servo.h>
+// include more than one library
+#include &lt;CapacitiveSensor.h&gt;
+#include &lt;Servo.h&gt;
 
 // 1M resistor between pins 4 & 2, pin 2 is sensor pin, add a foil
 CapacitiveSensor cs_4_2 = CapacitiveSensor(4,2);
@@ -96,27 +96,29 @@ void loop() {
         </code></pre>
         Draw a graph with the x-axis as time and the y-axis as voltage at pin 9 with respect to ground.
       </h4>
-      <img src="a3-q1.jpeg" />
+      <img src="a4-q1.jpeg" />
       <p>
-
+        The voltage at pin 0 is a repeating 5V pulse every ~20ms whose high time gradually increases from about 1ms to about 2ms as pos increases from 0 to 180 (each step held for 100ms), and then the loop restarts and the signal returns to the 1ms pulses for pos = 0.
       </p>
       <h4>
         2: Your input device is slightly broken, leading it to give us an erroneous reading 1% of the time. How can we address this? Answer in (pseudo)code.
       </h4>
+      <img src="a4-q2.jpeg", class="a4questions-img" />
       <p>
-
+        I rejected readings that fall outside the minimum and maximum range and replace them with the pervious value to handle the broken readings. The minimum and maximum valid values that I set up for this question were chosen based on the ranges I observed from the serial monitor.
       </p>
       <h4>
         3: Your input device is slightly noisy, leading the measurement to randomly deviate from the true measurement up or down by 10%. How can we address this? Answer in (pseudo)code.
       </h4>
+      <img src="a4-q3.jpeg", class="a4questions-img" />
       <p>
-
+        I kept my original logic the same and added a moving average smoothing step using the built in example in arduino. (Source: <a href="https://docs.arduino.cc/built-in-examples/analog/Smoothing/">https://docs.arduino.cc/built-in-examples/analog/Smoothing/)</a> By averaging the last 10 readings, short random ±10% fluctuations are smoothed out, so it becomes more stable.
       </p>
       <h4>
         4: Did you use AI tools in completing this assignment? If yes, please provide details on how/when, as well as a brief reflection. If you used an LLM, please 'share' your conversation and include it as part of your submission, or cite the prompt(s) you used and the output. If no, you can either leave this question blank, or provide other information if you'd like.
       </h4>
       <p>
-
+        I used AI tools mainly to help translate and refine short explanations of my work. I wrote my descriptions in Korean (my first language) and asked AI to rewrite them clearly and naturally in English. All my conversation with LLM were in Korean. (e.g. 저 그래프에 대해서 description을 영어로 쓸 건데, "그리고 다시 loop으로 0으로 돌아간다" 추가해서 [...] )
       </p>
     </section>
   </body>
