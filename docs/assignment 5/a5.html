@@ -13,72 +13,81 @@
     <section id="Overview">
       <h3>OVERVIEW</h3>
       <p>
-        This assignment asks you to build an Arduino project that uses at least one input and one output with more than one library or multiple sensors.
+        This assignment asks you to create a circuit that uses an N-MOSFET to control a high load device powered by an external supply. The project must use analogWrite() and an input sensor that uses a library.
       </p>
     </section>
     <section id="Schematic">
       <h3>SCHEMATIC</h3>
       <img src="a4-schematic.jpeg" /, class="a2-schematic-img">
       <p>
-        For this assignment, I used a capacitive touch sensor as the input and a servo motor as the output. All grounds in the circuit are shared. A piece of aluminum foil is connected to the receive pin, which acts as the touch pad, and a 1MΩ resistor is placed between the send pin and receive pin. <br> Since the CapacitiveSensor library uses a high value resistor between the send pin and the receive pin to detact small changes in capacitance, I chose 1MΩ resistor which was the largest available resistor in my kit.
+        For this assignment, I used a 12V LED strip as the output load
       </p>
     </section>
     <section id="Circuit">
       <h3>CIRCUIT</h3>
       <p>
-        I made a prototype that senses a touch using a piece of aluminum foil and moves a servo motor in response to the detected touch.
+        I made a prototype that where pressing different number keys (or row groups) on a 4x4 keypad changes the brightness of a high load LED using PWM.
       </p>
           <div class="grid">
             <figure>
-              <img src="a4-circuit.jpeg" /, class="circuit-img">
+              <img src="a5-circuit.jpg" /, class="circuit-img">
               <figcaption> Circuit operation (Image) </figcaption>
             </figure>
             <figure>
-              <img src="a4-circuit-gif.gif" /, class="circuit-img">
+              <img src="a5-circuit-gif.gif" /, class="circuit-img">
               <figcaption> Circuit operation (GIF) </figcaption>
             </figure>
           </div>
     </section>
     <section id="Arduino">
       <h3>ARDUINO</h3>
-      <p> From serial measurements, the sensor values were approximately 50-70 when not touched and 800-900 when touched. I chose a touch threshold as 300 from there to avoid false touches because it is safely above the max idle noise (70).
-      </p>
       <pre><code>
-// include more than one library
-#include &lt;CapacitiveSensor.h&gt;
-#include &lt;Servo.h&gt;
+#include &lt;Keypad.h&gt;
 
-// 1M resistor between pins 4 & 2, pin 2 is sensor pin, add a foil
-CapacitiveSensor cs_4_2 = CapacitiveSensor(4,2);
-// create a servo object
-Servo myservo;
+// define the number of rows and cols in the keypad
+const byte ROWS = 4;
+const byte COLS = 4;
 
-// set the touch detection threshold value
-const long touchThreshold = 300
+// define the key layout corresponding to the keypad buttons
+char keys[ROWS][COLS] = {
+  {'1','2','3','A'},
+  {'4','5','6','B'},
+  {'7','8','9','C'},
+  {'*','0','#','D'}
+};
+
+// define which arduino pins are connected to the keypad row pins and column pins
+byte rowPins[ROWS] = {9,8,7,6}; // Arduino pins connected to Row1-Row4
+byte colPins[COLS] = {5,4,3,2}; // Arduino pins connected to Col1-Col4
+
+// Initialize an instance of the Keypad class
+Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
+
+// define the PWM pin
+int ledPin = 11;
 
 void setup() {
-  // disable the automatic calibration of the capacitive sensor
-  cs_4_2.set_CS_AutocaL_Millis(0xFFFFFFFF);
-  Serial.begin(9600); // monitor sensor value
-  myservo.attach(9); // attach the servo motor to PWM pin
+  pinMode(ledPin, OUTPUT); // sest the LED control pin as an output
+  Serial.begin(9600); // start serial communication
 }
 
 void loop() {
-  // read the current capacitive touch sensor value
-  long sensorValue = cs_4_2.capacitiveSensor(30);
+ char key = keypad.getKey(); // read the currently pressed key from the keypad
+ if(key){ // check if a key is pressed
+  // print the value of the pressed key
+  Serial.print("Pressed: ");
+  Serial.println(key);
 
-  // check whether the sensor value indicates a touch
-  if (sensorValue > touchThreshold) {
-    // move the servo to 180 degrees when a touch is detected
-    myservo.write(180);
-  } else {
-    // move the servo back to 0 degrees when not touched
-    myservo.write(0);
+  if(key == '1' || key == '2' || key == '3'){ // if key is 1-3
+    analogWrite(ledPin, 64); // set LED brightness to 64
+  }else if(key == '4' || key == '5' || key == '6'){ // if key is 4-6
+    analogWrite(ledPin, 128); // set LED brightness to 128
+  }else if(key == '7' || key == '8' || key == '9'){ // if key is 7-9
+    analogWrite(ledPin, 225); // set LED brightness to 225
+  }else if(key == '*' || key == '0' || key == '#'){ // if key is *, 0, or #
+    analogWrite(ledPin, 0); // turn off LED strip
   }
-  // print the current sensor value
-  Serial.println(sensorValue);
-  // add a short delay to reduce jitter and slow down updates
-  delay(20);
+ }
 }
       </code></pre>
     </section>
@@ -89,17 +98,17 @@ void loop() {
       </h4>
       <img src="a4-q1.jpeg" />
       <p>
-        The voltage at pin 9 is a repeating 5V pulse every ~20ms whose high time gradually increases from about 1ms to about 2ms as pos increases from 0 to 180 (each step held for 100ms), and then the loop restarts and the signal returns to the 1ms pulses for pos = 0.
+
       </p>
       <h4>
         2: Draw a schematic for a circuit with using at least your arduino, a DC motor, a flyback diode, and capacitors between power and ground. Find parts with datasheets you could use for each of these schematic components.
       </h4>
       <img src="a4-q2.jpeg", class="a4questions-img" />
       <p>
-        I rejected readings that fall outside the minimum and maximum range and replace them with the pervious value to handle the broken readings. The minimum and maximum valid values that I set up for this question were chosen based on the ranges I observed from the serial monitor.
+
       </p>
       <h4>
-        3: Here is the datasheet for the L293D chip: https://www.ti.com/product/L293D. Draw a schematic using at least your arduino, this chip, and two motors. Write (pseudo) code that shows how you would move the motors both forward, both back, then one forward one back, and one back then forward.
+        3: Here is the datasheet for the L293D chip: <a href="https://www.ti.com/product/L293D">https://www.ti.com/product/L293D</a>. Draw a schematic using at least your arduino, this chip, and two motors. Write (pseudo) code that shows how you would move the motors both forward, both back, then one forward one back, and one back then forward.
       </h4>
       <img src="a4-q3.jpeg", class="a4questions-img" />
       <p>
