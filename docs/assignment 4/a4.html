@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, maximum-scale=1.0" />
+
+    <title>Sue Jo's HCDE 439 Physical Computing Page!</title>
+
+    <link href="../style.css" rel="stylesheet" type="text/css" />
+  </head>
+  <body>
+    <h1>Sue Jo's Assignment 4: Libraries!</h1>
+    <section id="Overview">
+      <h3>OVERVIEW</h3>
+      <p>
+        This assignment asks you to build an Arduino project that uses at least one input and one output with more than one library or multiple sensors.
+      </p>
+    </section>
+    <section id="Schematic">
+      <h3>SCHEMATIC</h3>
+      <img src="a4-schematic.jpeg" /, class="a2-schematic-img">
+      <p>
+        For this assignment, I used a capacitive touch sensor as the input and a servo motor as the output. All grounds in the circuit are shared. A piece of aluminum foil is connected to the receive pin, which acts as the touch pad, and a 1MΩ resistor is placed between the send pin and receive pin. <br> Since the CapacitiveSensor library uses a high value resistor between the send pin and the receive pin to detact small changes in capacitance, I chose 1MΩ resistor which was the largest available resistor in my kit.
+      </p>
+    </section>
+    <section id="Circuit">
+      <h3>CIRCUIT</h3>
+      <p>
+        I made a prototype that senses a touch using a piece of aluminum foil and moves a servo motor in response to the detected touch.
+      </p>
+          <div class="grid">
+            <figure>
+              <img src="a4-circuit.jpeg" /, class="circuit-img">
+              <figcaption> Circuit operation (Image) </figcaption>
+            </figure>
+            <figure>
+              <img src="a4-circuit-gif.gif" /, class="circuit-img">
+              <figcaption> Circuit operation (GIF) </figcaption>
+            </figure>
+          </div>
+    </section>
+    <section id="Arduino">
+      <h3>ARDUINO</h3>
+      <p> From serial measurements, the sensor values were approximately 50-70 when not touched and 800-900 when touched. I chose a touch threshold as 300 from there to avoid false touches because it is safely above the max idle noise (70).
+      </p>
+      <pre><code>
+// include more than one library
+#include &lt;CapacitiveSensor.h&gt;
+#include &lt;Servo.h&gt;
+
+// 1M resistor between pins 4 & 2, pin 2 is sensor pin, add a foil
+CapacitiveSensor cs_4_2 = CapacitiveSensor(4,2);
+// create a servo object
+Servo myservo;
+
+// set the touch detection threshold value
+const long touchThreshold = 300
+
+void setup() {
+  // disable the automatic calibration of the capacitive sensor
+  cs_4_2.set_CS_AutocaL_Millis(0xFFFFFFFF);
+  Serial.begin(9600); // monitor sensor value
+  myservo.attach(9); // attach the servo motor to PWM pin
+}
+
+void loop() {
+  // read the current capacitive touch sensor value
+  long sensorValue = cs_4_2.capacitiveSensor(30);
+
+  // check whether the sensor value indicates a touch
+  if (sensorValue > touchThreshold) {
+    // move the servo to 180 degrees when a touch is detected
+    myservo.write(180);
+  } else {
+    // move the servo back to 0 degrees when not touched
+    myservo.write(0);
+  }
+  // print the current sensor value
+  Serial.println(sensorValue);
+  // add a short delay to reduce jitter and slow down updates
+  delay(20);
+}
+      </code></pre>
+    </section>
+    <section id="Questions">
+      <h3>ADDITIONAL QUESTIONS</h3>
+      <h4>
+        1: Say you are using a servo motor you attach to pin 9. In your loop() you have the following code:
+        <pre><code>
+            void loop() {
+            for (pos = 0; pos <= 180; pos +=1) {
+                myservo.write(pos);
+                delay(100);
+                }
+            }
+        </code></pre>
+        Draw a graph with the x-axis as time and the y-axis as voltage at pin 9 with respect to ground.
+      </h4>
+      <img src="a4-q1.jpeg" />
+      <p>
+        The voltage at pin 9 is a repeating 5V pulse every ~20ms whose high time gradually increases from about 1ms to about 2ms as pos increases from 0 to 180 (each step held for 100ms), and then the loop restarts and the signal returns to the 1ms pulses for pos = 0.
+      </p>
+      <h4>
+        2: Your input device is slightly broken, leading it to give us an erroneous reading 1% of the time. How can we address this? Answer in (pseudo)code.
+      </h4>
+      <img src="a4-q2.jpeg", class="a4questions-img" />
+      <p>
+        I rejected readings that fall outside the minimum and maximum range and replace them with the pervious value to handle the broken readings. The minimum and maximum valid values that I set up for this question were chosen based on the ranges I observed from the serial monitor.
+      </p>
+      <h4>
+        3: Your input device is slightly noisy, leading the measurement to randomly deviate from the true measurement up or down by 10%. How can we address this? Answer in (pseudo)code.
+      </h4>
+      <img src="a4-q3.jpeg", class="a4questions-img" />
+      <p>
+        I kept my original logic the same and added a moving average smoothing step using the built in example in arduino. (Source: <a href="https://docs.arduino.cc/built-in-examples/analog/Smoothing/">https://docs.arduino.cc/built-in-examples/analog/Smoothing/)</a> By averaging the last 10 readings, short random ±10% fluctuations are smoothed out, so it becomes more stable.
+      </p>
+      <h4>
+        4: Did you use AI tools in completing this assignment? If yes, please provide details on how/when, as well as a brief reflection. If you used an LLM, please 'share' your conversation and include it as part of your submission, or cite the prompt(s) you used and the output. If no, you can either leave this question blank, or provide other information if you'd like.
+      </h4>
+      <p>
+        I used AI tools mainly to help translate and refine short explanations of my work. I wrote my descriptions in Korean (my first language) and asked AI to rewrite them clearly and naturally in English. All my conversation with LLM were in Korean. (e.g. 저 그래프에 대해서 description을 영어로 쓸 건데, "그리고 다시 loop으로 0으로 돌아간다" 추가해서 [...] )
+      </p>
+    </section>
+  </body>
+</html>

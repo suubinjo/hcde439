@@ -6,10 +6,10 @@
 
     <title>Sue Jo's HCDE 439 Physical Computing Page!</title>
 
-    <link href="style.css" rel="stylesheet" type="text/css" />
+    <link href="../style.css" rel="stylesheet" type="text/css" />
   </head>
   <body>
-    <h1>Sue Jo's Assignment 4: Libraries!</h1>
+    <h1>Sue Jo's Assignment 5: High(er) voltage and transitors!</h1>
     <section id="Overview">
       <h3>OVERVIEW</h3>
       <p>
@@ -60,7 +60,7 @@ void setup() {
   // disable the automatic calibration of the capacitive sensor
   cs_4_2.set_CS_AutocaL_Millis(0xFFFFFFFF);
   Serial.begin(9600); // monitor sensor value
-  myservo.attach(9); // attach the servo motor to PMW pin
+  myservo.attach(9); // attach the servo motor to PWM pin
 }
 
 void loop() {
@@ -85,30 +85,21 @@ void loop() {
     <section id="Questions">
       <h3>ADDITIONAL QUESTIONS</h3>
       <h4>
-        1: Say you are using a servo motor you attach to pin 9. In your loop() you have the following code:
-        <pre><code>
-            void loop() {
-            for (pos = 0; pos <= 180; pos +=1) {
-                myservo.write(pos);
-                delay(100);
-                }
-            }
-        </code></pre>
-        Draw a graph with the x-axis as time and the y-axis as voltage at pin 9 with respect to ground.
+        1: These are the datasheets for the n-mosfet transistor: DMT6009LCT, IRLZ44N, P30N06LE. Read the text on your mosfet to see which one you have. For your mosfet, what is the absolute maximum amount of current between pins 2 and 3?
       </h4>
       <img src="a4-q1.jpeg" />
       <p>
-        The voltage at pin 0 is a repeating 5V pulse every ~20ms whose high time gradually increases from about 1ms to about 2ms as pos increases from 0 to 180 (each step held for 100ms), and then the loop restarts and the signal returns to the 1ms pulses for pos = 0.
+        The voltage at pin 9 is a repeating 5V pulse every ~20ms whose high time gradually increases from about 1ms to about 2ms as pos increases from 0 to 180 (each step held for 100ms), and then the loop restarts and the signal returns to the 1ms pulses for pos = 0.
       </p>
       <h4>
-        2: Your input device is slightly broken, leading it to give us an erroneous reading 1% of the time. How can we address this? Answer in (pseudo)code.
+        2: Draw a schematic for a circuit with using at least your arduino, a DC motor, a flyback diode, and capacitors between power and ground. Find parts with datasheets you could use for each of these schematic components.
       </h4>
       <img src="a4-q2.jpeg", class="a4questions-img" />
       <p>
         I rejected readings that fall outside the minimum and maximum range and replace them with the pervious value to handle the broken readings. The minimum and maximum valid values that I set up for this question were chosen based on the ranges I observed from the serial monitor.
       </p>
       <h4>
-        3: Your input device is slightly noisy, leading the measurement to randomly deviate from the true measurement up or down by 10%. How can we address this? Answer in (pseudo)code.
+        3: Here is the datasheet for the L293D chip: https://www.ti.com/product/L293D. Draw a schematic using at least your arduino, this chip, and two motors. Write (pseudo) code that shows how you would move the motors both forward, both back, then one forward one back, and one back then forward.
       </h4>
       <img src="a4-q3.jpeg", class="a4questions-img" />
       <p>
