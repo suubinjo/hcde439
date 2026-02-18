@@ -18,15 +18,21 @@
     </section>
     <section id="Schematic">
       <h3>SCHEMATIC</h3>
-      <img src="a4-schematic.jpeg" /, class="a2-schematic-img">
+      <img src="a5-schematic.jpeg" /, class="a2-schematic-img">
       <p>
-        For this assignment, I used a 12V LED strip as the output load
+        For this assignment, I used a 12V LED strip as the high load output device and a 4x4 keypad (using the Keypad library) as the input sensor. The LED strip requires an external 12V power supply.
+        <br><br> I used only one branch of the LED strip, which has three white LEDs in seris and a 180Ω resistor. Each white LED as an approximate forward voltage drop of 3.4V, so three LEDs drop about 10.2V total. With a 12V supply, the remaining voltage across the resistor is approximately 1.8V. Using Ohm's Law, the current is 1.8V/180Ω = 10mA. Although this is below the Arduino I/O pin's 40mA maximum limit, the strip operates at 12V which exceeds the Ardino's 5V logic level. So an N-MOSFET is used to separate the 12V load power from the 5V logic power. The keypad is directly connected to the Arduino's digital pins since it functions as a low power switch matrix.
+        <br><br> Calculations: <br>
+        3x3.4V = 10.2V <br>
+        12V-10.2V = 1.8V across resistor <br>
+        I=1.8V/180Ω = 0.01A (10mA)
+        <br><br> The N-MOSFET used in this design (IRLZ44N) has an absolute max drain current rating of approximately 47A according to its datasheet. In this circuit, only one LED brance is used (0.01A), so the transistor operates well within its safe current limits.
       </p>
     </section>
     <section id="Circuit">
       <h3>CIRCUIT</h3>
       <p>
-        I made a prototype that where pressing different number keys (or row groups) on a 4x4 keypad changes the brightness of a high load LED using PWM.
+        I made a prototype that where pressing different number keys (or row groups) on a 4x4 keypad changes the brightness of a high load LED using PWM. Pressing the numbers on the first row sets the LED to the lowest brightness, the second row sets it to medium brightness, the third row sets it to the hightest, and the last row turns the light off.
       </p>
           <div class="grid">
             <figure>
@@ -94,31 +100,30 @@ void loop() {
     <section id="Questions">
       <h3>ADDITIONAL QUESTIONS</h3>
       <h4>
-        1: These are the datasheets for the n-mosfet transistor: DMT6009LCT, IRLZ44N, P30N06LE. Read the text on your mosfet to see which one you have. For your mosfet, what is the absolute maximum amount of current between pins 2 and 3?
+        1: These are the datasheets for the n-mosfet transistor: <a href="https://www.diodes.com/assets/Datasheets/DMT6009LCT.pdf">DMT6009LCT</a>, <a href="https://www.infineon.com/assets/row/public/documents/24/49/infineon-irlz44n-datasheet-en.pdf">IRLZ44N</a>, <a href="https://cdn.sparkfun.com/assets/4/1/1/8/0/RFP30N06LE.pdf">P30N06LE</a>. Read the text on your mosfet to see which one you have. For your mosfet, what is the absolute maximum amount of current between pins 2 and 3?
       </h4>
-      <img src="a4-q1.jpeg" />
       <p>
-
+        My mosfet is IRLZ44N, and from the datasheet, the absolute maximum continuous drain current between pin 2 and 3 is 47A at 25℃.
       </p>
       <h4>
-        2: Draw a schematic for a circuit with using at least your arduino, a DC motor, a flyback diode, and capacitors between power and ground. Find parts with datasheets you could use for each of these schematic components.
+        2: Draw a schematic for a circuit with using at least your arduino, a DC motor, and a flyback diode. Find parts with datasheets you could use for each of these schematic components.
       </h4>
-      <img src="a4-q2.jpeg", class="a4questions-img" />
+      <img src="a5-q2.jpeg", class="a4questions-img" />
       <p>
-
+        For this schematic, a 12V brushed DC motor is used as an example to match a 12V external power supply. The motor is controlled using an IRLZ44N N-MOSFET, and a flyback diode (1N4007) is placed in parallel with the motor (cathode to +12V). The Arduino ground and the external power supply ground are connected as a common reference.
       </p>
       <h4>
         3: Here is the datasheet for the L293D chip: <a href="https://www.ti.com/product/L293D">https://www.ti.com/product/L293D</a>. Draw a schematic using at least your arduino, this chip, and two motors. Write (pseudo) code that shows how you would move the motors both forward, both back, then one forward one back, and one back then forward.
       </h4>
-      <img src="a4-q3.jpeg", class="a4questions-img" />
+      <img src="a5-q3.jpeg" />
       <p>
-        I kept my original logic the same and added a moving average smoothing step using the built in example in arduino. (Source: <a href="https://docs.arduino.cc/built-in-examples/analog/Smoothing/">https://docs.arduino.cc/built-in-examples/analog/Smoothing/)</a> By averaging the last 10 readings, short random ±10% fluctuations are smoothed out, so it becomes more stable.
+
       </p>
       <h4>
         4: Did you use AI tools in completing this assignment? If yes, please provide details on how/when, as well as a brief reflection. If you used an LLM, please 'share' your conversation and include it as part of your submission, or cite the prompt(s) you used and the output. If no, you can either leave this question blank, or provide other information if you'd like.
       </h4>
       <p>
-        I used AI tools mainly to help translate and refine short explanations of my work. I wrote my descriptions in Korean (my first language) and asked AI to rewrite them clearly and naturally in English. All my conversation with LLM were in Korean. (e.g. 저 그래프에 대해서 description을 영어로 쓸 건데, "그리고 다시 loop으로 0으로 돌아간다" 추가해서 [...] )
+        Yes, I first used it to ask which sensors / high load output device would be the most easiest to use, but I didn't like the Chat GPT's pick so I just went with my decision. After that, I also used chat for debugging when my keypad was returning incorrect values when I press the buttons.
       </p>
     </section>
   </body>
