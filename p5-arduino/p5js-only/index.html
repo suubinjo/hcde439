@@ -12,10 +12,16 @@
     <script>
         function setup() {
             createCanvas(800, 600);
+            background(220);
         }
 
         function draw() {
-            background(220);
+            if(mouseIsPressed){
+                fill("green")
+            }else{
+                fill("red")
+            }
+            rect(mouseX, mouseY, 55, 55)
         }
     </script>
 </body>

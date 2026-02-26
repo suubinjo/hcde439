@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, maximum-scale=1.0" />
+
+    <title>Sue Jo's HCDE 439 Physical Computing Page!</title>
+
+    <link href="../style.css" rel="stylesheet" type="text/css" />
+  </head>
+  <body>
+    <h1>Sue Jo's Assignment 6: Talking to the Web!</h1>
+    <section id="Overview">
+      <h3>OVERVIEW</h3>
+      <p>
+        This assignment asks you to create a circuit that uses an N-MOSFET to control a high load device powered by an external supply. The project must use analogWrite() and an input sensor that uses a library.
+      </p>
+    </section>
+    <section id="Schematic">
+      <h3>SCHEMATIC</h3>
+      <img src="a5-schematic.jpeg" /, class="a2-schematic-img">
+      <p>
+        For this assignment, I used a 12V LED strip as the high load output device and a 4x4 keypad (using the Keypad library) as the input sensor. The LED strip requires an external 12V power supply.
+        <br><br> I used only one branch of the LED strip, which has three white LEDs in seris and a 180Ω resistor. Each white LED as an approximate forward voltage drop of 3.4V, so three LEDs drop about 10.2V total. With a 12V supply, the remaining voltage across the resistor is approximately 1.8V. Using Ohm's Law, the current is 1.8V/180Ω = 10mA. Although this is below the Arduino I/O pin's 40mA maximum limit, the strip operates at 12V which exceeds the Ardino's 5V logic level. So an N-MOSFET is used to separate the 12V load power from the 5V logic power. The keypad is directly connected to the Arduino's digital pins since it functions as a low power switch matrix.
+        <br><br> Calculations: <br>
+        3x3.4V = 10.2V <br>
+        12V-10.2V = 1.8V across resistor <br>
+        I=1.8V/180Ω = 0.01A (10mA)
+        <br><br> The N-MOSFET used in this design (IRLZ44N) has an absolute max drain current rating of approximately 47A according to its datasheet. In this circuit, only one LED brance is used (0.01A), so the transistor operates well within its safe current limits.
+      </p>
+    </section>
+    <section id="Circuit">
+      <h3>CIRCUIT</h3>
+      <p>
+        I made a prototype that where pressing different number keys (or row groups) on a 4x4 keypad changes the brightness of a high load LED using PWM. Pressing the numbers on the first row sets the LED to the lowest brightness, the second row sets it to medium brightness, the third row sets it to the hightest, and the last row turns the light off.
+      </p>
+          <div class="grid">
+            <figure>
+              <img src="a5-circuit.jpg" /, class="circuit-img">
+              <figcaption> Circuit operation (Image) </figcaption>
+            </figure>
+            <figure>
+              <img src="a5-circuit-gif.gif" /, class="circuit-img">
+              <figcaption> Circuit operation (GIF) </figcaption>
+            </figure>
+          </div>
+    </section>
+    <section id="Arduino">
+      <h3>ARDUINO</h3>
+      <pre><code>
+#include &lt;Keypad.h&gt;
+
+// define the number of rows and cols in the keypad
+const byte ROWS = 4;
+const byte COLS = 4;
+
+// define the key layout corresponding to the keypad buttons
+char keys[ROWS][COLS] = {
+  {'1','2','3','A'},
+  {'4','5','6','B'},
+  {'7','8','9','C'},
+  {'*','0','#','D'}
+};
+
+// define which arduino pins are connected to the keypad row pins and column pins
+byte rowPins[ROWS] = {9,8,7,6}; // Arduino pins connected to Row1-Row4
+byte colPins[COLS] = {5,4,3,2}; // Arduino pins connected to Col1-Col4
+
+// Initialize an instance of the Keypad class
+Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
+
+// define the PWM pin
+int ledPin = 11;
+
+void setup() {
+  pinMode(ledPin, OUTPUT); // sest the LED control pin as an output
+  Serial.begin(9600); // start serial communication
+}
+
+void loop() {
+ char key = keypad.getKey(); // read the currently pressed key from the keypad
+ if(key){ // check if a key is pressed
+  // print the value of the pressed key
+  Serial.print("Pressed: ");
+  Serial.println(key);
+
+  if(key == '1' || key == '2' || key == '3'){ // if key is 1-3
+    analogWrite(ledPin, 64); // set LED brightness to 64
+  }else if(key == '4' || key == '5' || key == '6'){ // if key is 4-6
+    analogWrite(ledPin, 128); // set LED brightness to 128
+  }else if(key == '7' || key == '8' || key == '9'){ // if key is 7-9
+    analogWrite(ledPin, 225); // set LED brightness to 225
+  }else if(key == '*' || key == '0' || key == '#'){ // if key is *, 0, or #
+    analogWrite(ledPin, 0); // turn off LED strip
+  }
+ }
+}
+      </code></pre>
+    </section>
+  </body>
+</html>
