@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.js"></script>
+    <script src="https://unpkg.com/@gohai/p5.webserial@^1/libraries/p5.webserial.js"></script>
+    <title>Arduino Interaction Website</title>
+    <style>
+      html,
+      body {
+        padding: 0;
+        margin: 0;
+        overflow: hidden;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      #instructions {
+        position: absolute;
+        top: 40px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 700px;
+        background: white;
+        padding: 20px;
+        text-align: center;
+        border-radius: 10px;
+        max-width: 90%;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        z-index: 10;
+        line-height: 1.5;
+      }
+      canvas {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="instructions">
+        <h2>Arduion Interaction Website Instructions</h2>
+        <p><strong>Keypad Input:</strong> The key pressed on the Arduino keypad will appear on the screen.</p>
+        <p><strong>Toggle the LED:</strong> Press the same key on your laptop keyboard to toggle the Arduino LED on or off.</p>
+        <p><strong>Background Color:</strong> Press the physical button connected to the Arduino to change the webpage background color. Press ENTER to reset it to white. </p>
+    </div>
+    <script src="interaction.js"></script>
+  </body>
+</html>
