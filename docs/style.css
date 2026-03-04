@@ -103,6 +103,12 @@ h4 {
   object-fit: cover;
 }
 
+.a6-circuit-img {
+  width: 600px;
+  height: 600px;
+  object-fit: cover;
+}
+
 .a4questions-img{
   width: 400px;
   height: auto;

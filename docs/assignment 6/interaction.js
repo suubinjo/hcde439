@@ -3,7 +3,8 @@ const BAUD_RATE = 9600; // This should match the baud rate in your Arduino sketc
 let port, connectBtn; // Declare global variables
 let keypadInput = "";
 let ledOn = false;
-let bgColor = "white";
+let bgColor;
+let r=255, g=255, b=255;
 
 function setup() {
   setupSerial(); // Run our serial setup function (below)
@@ -11,7 +12,7 @@ function setup() {
   // Create a canvas that is the size of our browser window.
   // windowWidth and windowHeight are p5 variables
   createCanvas(windowWidth, windowHeight);
-
+  bgColor = color(255,255,255)
   // p5 text settings. BOLD and CENTER are constants provided by p5.
   // See the "Typography" section in the p5 reference: https://p5js.org/reference/
   textFont("system-ui", 50);
@@ -24,7 +25,14 @@ function draw() {
   if (!portIsOpen) return;
 
   let str = port.readUntil("\n"); // Read from the port until the newline
-  if (str.length == 0) return; // If we didn't read anything, return.
+  if (str.length == 0){
+    background(bgColor);
+    fill("black");
+    text("Keypad Input: " + keypadInput, windowWidth/2, windowHeight/2-40);
+    text("LED Status: " + (ledOn? "ON":"OFF"), windowWidth/2, windowHeight/2+40);
+    text("Background Color: (" + int(r)+", "+int(g)+", "+int(b)+")", windowWidth/2, windowHeight/2+120);
+    return; // If we didn't read anything, return.
+  }
 
   const msg = str.trim();
   if(msg.startsWith("KEY,")){
@@ -40,7 +48,7 @@ function draw() {
   background(bgColor);
   fill("black");
   text("Keypad Input: " + keypadInput, windowWidth/2, windowHeight/2-40);
-  text("Keypad Input: " + (ledOn? "ON":"OFF"), windowWidth/2, windowHeight/2+40);
+  text("LED Status: " + (ledOn? "ON":"OFF"), windowWidth/2, windowHeight/2+40);
   text("Background Color: (" + int(r)+", "+int(g)+", "+int(b)+")", windowWidth/2, windowHeight/2+120);
 }
 
@@ -52,15 +60,16 @@ function keyPressed(){
         r = 255;
         g = 255;
         b = 255;
-        return;
+        return false;
     }
-    if(!keypadInput) return;
+    if(!keypadInput) return false;
     if(key.toUpperCase() === keypadInput.toUpperCase()){
         ledOn =! ledOn;
-    }
-    if(port.opened()){
+        if(port.opened()){
         port.write("LED\n");
+        }
     }
+    return false;
 }
 
 function setupSerial() {

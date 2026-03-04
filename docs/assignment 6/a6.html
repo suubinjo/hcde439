@@ -13,43 +13,48 @@
     <section id="Overview">
       <h3>OVERVIEW</h3>
       <p>
-        This assignment asks you to create a circuit that uses an N-MOSFET to control a high load device powered by an external supply. The project must use analogWrite() and an input sensor that uses a library.
+        This assignment asks you to create an interactive webpage that communicates with an Arduino using WebSerial. The webpage must be built with p5.js including both setup() and draw() function. The project requires interaction in both ways (webpage ↔ Arduino), with at least two Arduino input devices and at least one Arduino output device.
       </p>
     </section>
     <section id="Schematic">
       <h3>SCHEMATIC</h3>
-      <img src="a5-schematic.jpeg" /, class="a2-schematic-img">
+      <img src="a6-schematic.jpeg">
       <p>
-        For this assignment, I used a 12V LED strip as the high load output device and a 4x4 keypad (using the Keypad library) as the input sensor. The LED strip requires an external 12V power supply.
-        <br><br> I used only one branch of the LED strip, which has three white LEDs in seris and a 180Ω resistor. Each white LED as an approximate forward voltage drop of 3.4V, so three LEDs drop about 10.2V total. With a 12V supply, the remaining voltage across the resistor is approximately 1.8V. Using Ohm's Law, the current is 1.8V/180Ω = 10mA. Although this is below the Arduino I/O pin's 40mA maximum limit, the strip operates at 12V which exceeds the Ardino's 5V logic level. So an N-MOSFET is used to separate the 12V load power from the 5V logic power. The keypad is directly connected to the Arduino's digital pins since it functions as a low power switch matrix.
-        <br><br> Calculations: <br>
-        3x3.4V = 10.2V <br>
-        12V-10.2V = 1.8V across resistor <br>
-        I=1.8V/180Ω = 0.01A (10mA)
-        <br><br> The N-MOSFET used in this design (IRLZ44N) has an absolute max drain current rating of approximately 47A according to its datasheet. In this circuit, only one LED brance is used (0.01A), so the transistor operates well within its safe current limits.
+        For this assignment, I used a 4x4 keypad and a push button as the input devices, and one red LED (with 220Ω resistor) as the output device connected to the Arduino. All grounds in the circuit are connected to the Arduino GND.
+        <br><br> Here's my calculation:
+        <br> V_R = V_pin - V_LED = 5V - 2V = 3V
+        <br> I = V_R / R = 3V / 0.02A = 150Ω
+        <br><br> And then I rounded it up to 220Ω resistor which was provided in the kit. For button, I used a 10kΩ resistor to limit thr current because the value allows only a very small current to flow while still providing a stable signal to the Arduino input pin.
+        <br><small><em>Note: This explanation is adapted from my Assignment 2 webpage.</em></small>
       </p>
     </section>
     <section id="Circuit">
       <h3>CIRCUIT</h3>
       <p>
-        I made a prototype that where pressing different number keys (or row groups) on a 4x4 keypad changes the brightness of a high load LED using PWM. Pressing the numbers on the first row sets the LED to the lowest brightness, the second row sets it to medium brightness, the third row sets it to the hightest, and the last row turns the light off.
+        I made a prototype that connects an Arduino keypad, button, and LED to a webpage.
+        <ul>
+          <li><strong>Web → Arduino: </strong>Pressing the same number key on the laptop keyboard toggles the Arduino LED.</li>
+          <li><strong>Arduino → Web (Keypad): </strong>Whe a keypad button is pressed, the webpage displays the keypad input.</li>
+          <li><strong>Arduino → Web (Button): </strong> Pressing the button changes the webpage background to a random color.</li>
+          <li><strong>Keyboard reset (Web only): </strong> Pressing ENTER resets the background color to white.</li>
+        </ul>
       </p>
           <div class="grid">
             <figure>
-              <img src="a5-circuit.jpg" /, class="circuit-img">
+              <img src="a6-circuit.jpg" /, class="a6-circuit-img">
               <figcaption> Circuit operation (Image) </figcaption>
             </figure>
             <figure>
-              <img src="a5-circuit-gif.gif" /, class="circuit-img">
+              <img src="a6-circuit-gif.gif" /, class="a6-circuit-img">
               <figcaption> Circuit operation (GIF) </figcaption>
             </figure>
           </div>
     </section>
     <section id="Arduino">
       <h3>ARDUINO</h3>
+      <p> </p>
       <pre><code>
 #include &lt;Keypad.h&gt;
-
 // define the number of rows and cols in the keypad
 const byte ROWS = 4;
 const byte COLS = 4;
@@ -69,11 +74,16 @@ byte colPins[COLS] = {5,4,3,2}; // Arduino pins connected to Col1-Col4
 // Initialize an instance of the Keypad class
 Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
 
-// define the PWM pin
-int ledPin = 11;
+// define the led pin and button pin
+const int ledPin = 13;
+const int buttonPin = 10;
+// create variables to track the button state
+int buttonState = 0;
+int lastButtonState = buttonState;
 
 void setup() {
-  pinMode(ledPin, OUTPUT); // sest the LED control pin as an output
+  pinMode(buttonPin, INPUT); // set the button pin as an input
+  pinMode(ledPin, OUTPUT); // set the LED control pin as an output
   Serial.begin(9600); // start serial communication
 }
 
@@ -81,25 +91,39 @@ void loop() {
  char key = keypad.getKey(); // read the currently pressed key from the keypad
  if(key){ // check if a key is pressed
   // print the value of the pressed key
-  Serial.print("Pressed: ");
+  Serial.print("KEY,");
   Serial.println(key);
-
-  if(key == '1' || key == '2' || key == '3'){ // if key is 1-3
-    analogWrite(ledPin, 64); // set LED brightness to 64
-  }else if(key == '4' || key == '5' || key == '6'){ // if key is 4-6
-    analogWrite(ledPin, 128); // set LED brightness to 128
-  }else if(key == '7' || key == '8' || key == '9'){ // if key is 7-9
-    analogWrite(ledPin, 225); // set LED brightness to 225
-  }else if(key == '*' || key == '0' || key == '#'){ // if key is *, 0, or #
-    analogWrite(ledPin, 0); // turn off LED strip
-  }
  }
+ // read the current state of the buttonPin
+ buttonState = digitalRead(buttonPin);
+ // check if button was just pressed
+ if(buttonState == HIGH && lastButtonState == LOW){
+    Serial.println("BTN"); // send the message to the webpage
+    delay(200);
+    }
+  // save the button state for next loop
+  lastButtonState = buttonState;
+  // if the webpage sent data
+  if(Serial.available()){
+    String cmd = Serial.readStringUntil('\n'); // read the message from webpage
+    cmd.trim(); // remove extra spaces
+    if(cmd == "LED"){ //if message says "LED"
+      digitalWrite(ledPin, !digitalRead(ledPin)); //turn LED on or off
+    }
+  }
 }
       </code></pre>
     </section>
     <section>
       <section id="Links">
-
+        <h3>LINKS</h3>
+        <img src="a6-interactive-webpage.png">
+        <p>
+          This screenshot shows the interactive website I built, including the instructions for the user and real time interaction with the Arduino. Below are the links to the files used to build the webpage:
+          <br><a href="https://github.com/suubinjo/hcde439/blob/main/docs/assignment%206/interaction.html">Link to interaction.html</a> |
+          <a href="https://github.com/suubinjo/hcde439/blob/main/docs/assignment%206/interaction.js">Link to interaction.js</a>
+          <br><small><em> Note: I referenced the "button" example from p5-arduino files while building this project, so some of the comments are adapted from there. <br> For the HTML structure, I referenced <a href="https://github.com/suubinjo/hcde439/blob/main/p5-arduino/button/index.html">this file</a>, and the initial JavaScript code was from <a href="https://github.com/suubinjo/hcde439/blob/main/p5-arduino/button/index.js">this one</a>.</em></small>
+        </p>
       </section>
     </section>
   </body>
