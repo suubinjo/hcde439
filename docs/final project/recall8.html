@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Recall8!</title>
+    <link rel="stylesheet" href="recall8.css" />
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.js"></script>
+    <script src="https://unpkg.com/@gohai/p5.webserial@^1/libraries/p5.webserial.js"></script>
+  </head>
+  <body>
+    <div id="infoBox">
+      <h2>Welcome to Recall8!</h2>
+      <p>
+        It will get harder each round! Round 1 is only numbers(0-9), Round 2 is numbers + */#, and the last round is numbers + */# + A-D. Enjoy!
+      </p>
+
+      <div class="led-status">
+        <h3>LED Status</h3>
+        <div class="led-row"><span class="led blue"></span><span>Playback</span></div>
+        <div class="led-row"><span class="led white"></span><span>Input</span></div>
+        <div class="led-row"><span class="led green"></span><span>Success</span></div>
+        <div class="led-row"><span class="led red"></span><span>Fail</span></div>
+      </div>
+    </div>
+
+    <main class="app">
+      <div class="progress" id="progressText">ROUND 1 / 3</div>
+      <div class="status" id="statusText">PRESS SPACE TO START</div>
+      <div class="subtext" id="subText">
+        8 empty cards will fill in rhythm. Then repeat the sequence.
+      </div>
+
+      <section class="grid" id="grid"></section>
+
+      <div class="hint">
+        Press SPACE to start. Press R to restart.
+      </div>
+    </main>
+
+    <script src="recall8.js"></script>
+  </body>
+</html>

@@ -13,31 +13,30 @@
     <section id="Concept">
       <h3>CONCEPT</h3>
       <p>
-        This assignment asks you to create an interactive webpage that communicates with an Arduino using WebSerial. The webpage must be built with p5.js including both setup() and draw() function. The project requires interaction in both ways (webpage ↔ Arduino), with at least two Arduino input devices and at least one Arduino output device.
+        Inspired by "Say The word on Beat" clips on socical media(<a href="https://youtu.be/1t4-CL-rIT4?si=yOMwokErH-yE0c_d">Link to example video</a>), I designed a web game called Recall8. In the game, players first watch an 8 cards sequence that appreas one by one on the screen. After the cards flip, they must repeat the pattern using a physical keypad controller.
       </p>
     </section>
     <section id="Schematic">
       <h3>SCHEMATIC</h3>
       <img src="a6-schematic.jpeg">
       <p>
-        For this assignment, I used a 4x4 keypad and a push button as the input devices, and one red LED (with 220Ω resistor) as the output device connected to the Arduino. All grounds in the circuit are connected to the Arduino GND.
+        For this assignment, I used a 4x4 keypad as the input device, and one RGB LED (with three 220Ω resistor) as the output device connected to the Arduino. All grounds in the circuit are connected to the Arduino GND.
         <br><br> Here's my calculation:
         <br> V_R = V_pin - V_LED = 5V - 2V = 3V
         <br> I = V_R / R = 3V / 0.02A = 150Ω
-        <br><br> And then I rounded it up to 220Ω resistor which was provided in the kit. For button, I used a 10kΩ resistor to limit thr current because the value allows only a very small current to flow while still providing a stable signal to the Arduino input pin.
-        <br><small><em>Note: This explanation is adapted from my Assignment 2 webpage.</em></small>
+        <br><br> And then I rounded it up to 220Ω resistor which was provided in the kit.
       </p>
     </section>
     <section id="Circuit">
       <h3>CIRCUIT</h3>
       <p>
-        I made a prototype that connects an Arduino keypad, button, and LED to a webpage.
+        I built a prototype that connects the Arduino, keypad, and RGB LED to a web based game interface. There are three rounds total, and the difficulty increases each round.
         <ul>
-          <li><strong>Web → Arduino: </strong>Pressing the same number key on the laptop keyboard toggles the Arduino LED.</li>
-          <li><strong>Arduino → Web (Keypad): </strong>Whe a keypad button is pressed, the webpage displays the keypad input.</li>
-          <li><strong>Arduino → Web (Button): </strong> Pressing the button changes the webpage background to a random color.</li>
-          <li><strong>Keyboard reset (Web only): </strong> Pressing ENTER resets the background color to white.</li>
+          <li><strong>1st Round: </strong>only numbers</li>
+          <li><strong>2nd Round: </strong>numbers + special characters (* and #)</li>
+          <li><strong>3rd Round: </strong> numbers + special characters + letters (A-D) </li>
         </ul>
+        <br> An RGB LED provides visual feedback to indicate different stages of the game: <br> 🔵 Playback  ⚪️ Start  🟢 Success  🔴 Fail
       </p>
           <div class="grid">
             <figure>
@@ -50,11 +49,16 @@
             </figure>
           </div>
     </section>
+    <section id="Coding">
+      <h3>WEB IMPLEMENTATION</h3>
+      <p>Link to the coding files are attachted on the last section with the demo video.</p>
+    </section>
     <section id="Arduino">
       <h3>ARDUINO</h3>
       <p> The keypad code part was adapted from my Assignment 5 webpage.</p>
       <pre><code>
 #include &lt;Keypad.h&gt;
+
 // define the number of rows and cols in the keypad
 const byte ROWS = 4;
 const byte COLS = 4;
@@ -74,42 +78,52 @@ byte colPins[COLS] = {5,4,3,2}; // Arduino pins connected to Col1-Col4
 // Initialize an instance of the Keypad class
 Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
 
-// define the led pin and button pin
-const int ledPin = 13;
-const int buttonPin = 10;
-// create variables to track the button state
-int buttonState = 0;
-int lastButtonState = buttonState;
+// define the RGB LED pins
+const int redPin = 10;
+const int greenPin = 11;
+const int bluePin = 12;
 
 void setup() {
-  pinMode(buttonPin, INPUT); // set the button pin as an input
-  pinMode(ledPin, OUTPUT); // set the LED control pin as an output
   Serial.begin(9600); // start serial communication
+  // set the RGB LED pins as outputs
+  pinMode(redPin, OUTPUT);
+  pinMode(greenPin, OUTPUT);
+  pinMode(bluePin, OUTPUT);
+  setLED('O'); // OFF
 }
 
 void loop() {
  char key = keypad.getKey(); // read the currently pressed key from the keypad
  if(key){ // check if a key is pressed
   // print the value of the pressed key
-  Serial.print("KEY,");
   Serial.println(key);
  }
- // read the current state of the buttonPin
- buttonState = digitalRead(buttonPin);
- // check if button was just pressed
- if(buttonState == HIGH && lastButtonState == LOW){
-    Serial.println("BTN"); // send the message to the webpage
-    delay(200);
-    }
-  // save the button state for next loop
-  lastButtonState = buttonState;
-  // if the webpage sent data
-  if(Serial.available()){
-    String cmd = Serial.readStringUntil('\n'); // read the message from webpage
-    cmd.trim(); // remove extra spaces
-    if(cmd == "LED"){ //if message says "LED"
-      digitalWrite(ledPin, !digitalRead(ledPin)); //turn LED on or off
-    }
+ if(Serial.available()){ // check if there is incoming data from serial
+  char state = Serial.read(); // read the incoming character from serial
+  if(state != '\n' &&  state != '\r'){ // ignore newline and carriage return characters
+    setLED(state); // change the LED color based on the received signals
+  }
+ }
+}
+
+// function that controls the RGB LED color based on the signals
+void setLED(char state){
+  // turn everything off first
+  digitalWrite(redPin, LOW);
+  digitalWrite(greenPin, LOW);
+  digitalWrite(bluePin, LOW);
+
+  if (state == 'O'){ // if state is 'O' (OFF), all colors remain low
+  } else if (state == 'W'){ // if state is 'W'(Wait, which means the game is showing off the cards)
+    digitalWrite(bluePin, HIGH); // turn on Blue
+  } else if (state == 'P'){ // if state is 'P' (Play), turn on White
+    digitalWrite(bluePin, HIGH);
+    digitalWrite(redPin, HIGH);
+    digitalWrite(greenPin, HIGH);
+  } else if (state == 'S'){ // if state is 'S' (Success), turn on Green
+    digitalWrite(greenPin, HIGH);
+  } else if (state == 'F'){ // if state is 'F' (Fail), turn on Red
+    digitalWrite(redPin, HIGH);
   }
 }
       </code></pre>
@@ -120,9 +134,8 @@ void loop() {
         <img src="a6-interactive-webpage.png">
         <p>
           This screenshot shows the interactive website I built, including the instructions for the user and real time interaction with the Arduino. Below are the links to the files used to build the webpage:
-          <br><a href="https://github.com/suubinjo/hcde439/blob/main/docs/assignment%206/interaction.html">Link to interaction.html</a> |
-          <a href="https://github.com/suubinjo/hcde439/blob/main/docs/assignment%206/interaction.js">Link to interaction.js</a>
-          <br><small><em> Note: I referenced the "button" example from p5-arduino files while building this project, so some of the comments are adapted from there. <br> For the HTML structure, I referenced <a href="https://github.com/suubinjo/hcde439/blob/main/p5-arduino/button/index.html">this file</a>, and the initial JavaScript code was from <a href="https://github.com/suubinjo/hcde439/blob/main/p5-arduino/button/index.js">this one</a>.</em></small>
+          <br><a href="https://github.com/suubinjo/hcde439/blob/main/docs/final%20project/recall8.html">Link to recall8.html</a> | <a href="">Link to recall8.css</a> |
+          <a href="https://github.com/suubinjo/hcde439/blob/main/docs/final%20project/recall8.js">Link to recall8.js</a>
         </p>
       </section>
     </section>
