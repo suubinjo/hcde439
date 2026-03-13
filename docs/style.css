@@ -107,17 +107,25 @@ h4 {
   object-fit: cover;
 }
 
+.a4questions-img{
+  width: 400px;
+  height: auto;
+  object-fit: cover;
+}
+
+.final-circuit-img{
+  width: 600px;
+  height: 300px;
+  object-fit: cover;
+}
+
+
 .a6-circuit-img {
   width: 600px;
   height: 600px;
   object-fit: cover;
 }
 
-.a4questions-img{
-  width: 400px;
-  height: auto;
-  object-fit: cover;
-}
 
 pre {
   background: #f5f5f7;

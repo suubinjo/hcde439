@@ -13,14 +13,14 @@
     <section id="Concept">
       <h3>CONCEPT</h3>
       <p>
-        Inspired by "Say The word on Beat" clips on socical media(<a href="https://youtu.be/1t4-CL-rIT4?si=yOMwokErH-yE0c_d">Link to example video</a>), I designed a web game called Recall8. In the game, players first watch an 8 cards sequence that appreas one by one on the screen. After the cards flip, they must repeat the pattern using a physical keypad controller.
+        This project demonstrates how physical computing can combine hardware input, software logic, and visual feedback to create an interactive game experience. Inspired by "Say The word on Beat" clips on social media (<a href="https://youtu.be/1t4-CL-rIT4?si=yOMwokErH-yE0c_d">Link to example video</a>), I designed a web game called Recall8. In the game, players first watch an 8 cards sequence that appears one by one on the screen. After the cards flip, they must repeat the pattern using a physical keypad controller.
       </p>
     </section>
     <section id="Schematic">
       <h3>SCHEMATIC</h3>
-      <img src="final-schematic.jpeg"/, class="schematic-img">
+      <img src="final-schematic.jpeg"/>
       <p>
-        For this assignment, I used a 4x4 keypad as the input device, and one RGB LED (with three 220Ω resistor) as the output device connected to the Arduino. All grounds in the circuit are connected to the Arduino GND.
+        For this assignment, I used a 4x4 keypad as the input device, and one RGB LED (common cathode) as the output device. For each LED color, I used 220Ω resistors to limit the current.
         <br><br> Here's my calculation:
         <br> V_R = V_pin - V_LED = 5V - 2V = 3V
         <br> I = V_R / R = 3V / 0.02A = 150Ω
@@ -30,13 +30,13 @@
     <section id="Circuit">
       <h3>CIRCUIT</h3>
       <p>
-        I built a prototype that connects the Arduino, keypad, and RGB LED to a web based game interface. There are three rounds total, and the difficulty increases each round.
+        I built a prototype that connects the Arduino, keypad, and RGB LED to a web based game interface. There are three rounds total, and the difficulty increases each round. The sequence is randomly generated each time, so the game will be different every time the user plays it. If they enter the wrong answer, the round restarts with a new sequenece.
         <ul>
           <li><strong>1st Round: </strong>only numbers</li>
           <li><strong>2nd Round: </strong>numbers + special characters (* and #)</li>
           <li><strong>3rd Round: </strong> numbers + special characters + letters (A-D) </li>
         </ul>
-        <br> An RGB LED provides visual feedback to indicate different stages of the game: <br> 🔵 Playback  ⚪️ Start  🟢 Success  🔴 Fail
+        <br> An RGB LED provides visual feedback to indicate different stages of the game: <br> 🔵 Playback  ⚪️ Start  🟢 Success  🔴 Fail <br><br> Together, The final system integrates three components: <br> Physical keypad controller, web based game interface and the RGB LED ffedback system.
       </p>
           <div class="grid">
             <figure>
@@ -49,13 +49,35 @@
             </figure>
           </div>
     </section>
-    <section id="Coding">
-      <h3>WEB IMPLEMENTATION</h3>
-      <p>Link to the coding files are attachted on the last section with the demo video.</p>
+    <section id="Progress">
+      <h3>PROGRESS</h3>
+      <img src="final-interface.png">
+      <p> The screen displays game instructions, the current round number, and prompts that guide the player during the game. The game interface was implemented using HTML, CSS, and JavaScript with p5.js and the WebSerial library. <br> The web application is responsible for:
+        <ul>
+          <li> generating random symbol sequences</li>
+          <li> displaying the sequence visually</li>
+          <li> card flipping animations</li>
+          <li> comparing player input with the correct sequence</li>
+          <li> communicating with the Arduino through serial connection </li>
+          <li> starting and resetting the game </li>
+        </ul>
+         Link to the coding files are attached on the last section with the demo video. </p>
+      <div class="grid">
+            <figure>
+              <img src="final-3d.png" /, class="final-circuit-img">
+              <figcaption> Designed on OnShape </figcaption>
+            </figure>
+            <figure>
+              <img src="final-3d-irl.png" /, class="final-circuit-img">
+              <figcaption> How it turned out</figcaption>
+            </figure>
+          </div>
+      <p><br> And then I also designed and 3D printed a small enclosure to hold the keypad and hide the circuit components.
+      </p>
     </section>
     <section id="Arduino">
       <h3>ARDUINO</h3>
-      <p> The keypad code part was adapted from my Assignment 5 webpage.</p>
+      <p> The Arduino sends the pressed key values to the computer through serial communication, and when the Arduino receives commands from the browser through the serial port, it changes the RGB color accordingly. <br><small><em>The keypad code part was adapted from my Assignment 5 webpage. </em> </small></p>
       <pre><code>
 #include &lt;Keypad.h&gt;
 
@@ -133,7 +155,7 @@ void setLED(char state){
         <h3>DEMO VIDEO AND LINKS</h3>
         <video controls><source src="demo video.mov" type = "video/mp4"></video>
         <p>
-          This screenshot shows the interactive website I built, including the instructions for the user and real time interaction with the Arduino. Below are the links to the files used to build the webpage:
+          This is a demo video of how the player interact with my game. Below are the links to the files used to build the webpage:
           <br><a href="https://github.com/suubinjo/hcde439/blob/main/docs/final%20project/recall8.html">Link to recall8.html</a> | <a href="https://github.com/suubinjo/hcde439/blob/main/docs/final%20project/recall8.css">Link to recall8.css</a> |
           <a href="https://github.com/suubinjo/hcde439/blob/main/docs/final%20project/recall8.js">Link to recall8.js</a>
         </p>
